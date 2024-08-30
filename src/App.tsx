@@ -1,29 +1,24 @@
 
-import { useState } from 'react';
+
+import { Routes, Route } from 'react-router-dom'
 import './App.css'
-import TimeList from './Components/TimeList'
-import Popup from './Components/Popup';
+import { Home } from './Components/Home'
+import { Admin } from './Components/Admin'
+import { NotFound } from './Components/NotFound'
+import { Login } from './Components/Login'
 
 function App() {
 
-  const [showPopup, setShowPopup] = useState(false);
 
-  const handleConfirmClick = () => {
-    setShowPopup(true);
-  };
-
-  const handleClosePopup = () => {
-    setShowPopup(false);
-  };
 
   return (
     <>
-      <h1>Hooligan Cuts</h1>
-      <TimeList />
-      <button className="confirm-button" onClick={handleConfirmClick}>
-        Confirmar Turno
-      </button>
-      {showPopup && <Popup onClose={handleClosePopup} />}
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/admin' element={<Admin />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='*' element={<NotFound />} />
+      </Routes>
     </>
   )
 }
