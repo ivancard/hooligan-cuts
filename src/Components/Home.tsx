@@ -7,6 +7,8 @@ import { supabase } from '../supabase/supabase';
 export const Home = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [days, setDays] = useState<Day[]>([]);
+  const [selectedDay, setSelectedDay] = useState<Day | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   useEffect(() => {
     getDays();
@@ -21,22 +23,43 @@ export const Home = () => {
     }
   };
 
+  const handleSelectionChange = (day: Day | null, time: string | null) => {
+    setSelectedDay(day);
+    setSelectedTime(time);
+  };
+
   const handleConfirmClick = () => {
-    setShowPopup(true);
+    if (selectedDay && selectedTime) {
+      console.log("Día seleccionado:", selectedDay.dayName);
+      console.log("Horario seleccionado:", selectedTime);
+      setShowPopup(true);
+    }
   };
 
   const handleClosePopup = () => {
     setShowPopup(false);
   };
 
+  const isConfirmButtonEnabled = selectedDay !== null && selectedTime !== null;
+
   return (
     <div>
       <h1>Hooligan Cuts</h1>
-      <TimeList days={days} />
-      <button className="confirm-button" onClick={handleConfirmClick}>
+      <TimeList days={days} onSelectionChange={handleSelectionChange} />
+      <button
+        className={`confirm-button ${isConfirmButtonEnabled ? '' : 'disabled'}`}
+        onClick={handleConfirmClick}
+        disabled={!isConfirmButtonEnabled}
+      >
         Confirmar Turno
       </button>
-      {showPopup && <Popup onClose={handleClosePopup} />}
+      {showPopup && selectedDay && selectedTime && (
+        <Popup
+          onClose={handleClosePopup}
+          selectedDay={selectedDay.dayName}
+          selectedTime={selectedTime}
+        />
+      )}
     </div>
   );
 };

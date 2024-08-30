@@ -1,3 +1,6 @@
+import { useState } from "react";
+
+
 export interface Day {
     id: number;
     dayName: string;
@@ -10,25 +13,53 @@ export interface Day {
 
 interface TimeListProps {
     days: Day[];
+    onSelectionChange: (day: Day | null, time: string | null) => void;
 }
 
-export default function TimeList({ days }: TimeListProps) {
+export default function TimeList({ days, onSelectionChange }: TimeListProps) {
+    const [selectedDay, setSelectedDay] = useState<Day | null>(null);
+    const [selectedTime, setSelectedTime] = useState<string | null>(null);
+
+    const handleDaySelect = (day: Day) => {
+        setSelectedDay(day);
+        setSelectedTime(null);
+        onSelectionChange(day, null);
+    };
+
+    const handleTimeSelect = (time: string) => {
+        setSelectedTime(time);
+        onSelectionChange(selectedDay, time);
+    };
+
     return (
         <div className="time-list">
-            {days.map((day) => (
-                <div key={day.id} className="day-section">
-                    <h3>{day.dayName}</h3>
-                    <div className="horario-list">
-                        {generateHorarios(day.openingTime, day.closeTime, day.interval).map(
-                            (horario, index) => (
-                                <button key={index} className="horario-button">
-                                    {horario}
-                                </button>
-                            )
-                        )}
-                    </div>
+            <div className="days-list">
+                {days.map((day) => (
+                    <button
+                        key={day.id}
+                        className={`day-button ${selectedDay?.id === day.id ? 'selected' : ''}`}
+                        onClick={() => handleDaySelect(day)}
+                    >
+                        {day.dayName}
+                    </button>
+                ))}
+            </div>
+            {selectedDay && (
+                <div className="horario-list">
+                    <h3>{selectedDay.dayName}</h3>
+                    {generateHorarios(selectedDay.openingTime, selectedDay.closeTime, selectedDay.interval).map(
+                        (horario) => (
+                            <button
+                                key={horario}
+                                className={`horario-button ${selectedTime === horario ? 'selected' : ''}`}
+                                onClick={() => handleTimeSelect(horario)}
+                            >
+                                {horario}
+                            </button>
+                        )
+                    )}
                 </div>
-            ))}
+            )}
         </div>
     );
 }
